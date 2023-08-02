@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"sort"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog"
@@ -15,6 +16,8 @@ import (
 
 	"go.mau.fi/mautrix-discord/database"
 )
+
+var globalBackfillLock sync.Mutex
 
 func (portal *Portal) forwardBackfillInitial(source *User, thread *Thread) {
 	log := portal.log
@@ -26,6 +29,9 @@ func (portal *Portal) forwardBackfillInitial(source *User, thread *Thread) {
 	if portal.forwardBackfillLock.TryLock() {
 		panic("forwardBackfillInitial() called without locking forwardBackfillLock")
 	}
+
+	globalBackfillLock.Lock()
+	defer globalBackfillLock.Unlock()
 
 	limit := portal.bridge.Config.Bridge.Backfill.Limits.Initial.Channel
 	if portal.GuildID == "" {
@@ -77,6 +83,9 @@ func (portal *Portal) ForwardBackfillMissed(source *User, serverLastMessageID st
 
 	portal.forwardBackfillLock.Lock()
 	defer portal.forwardBackfillLock.Unlock()
+
+	globalBackfillLock.Lock()
+	defer globalBackfillLock.Unlock()
 
 	var lastMessage *database.Message
 	if thread != nil {
