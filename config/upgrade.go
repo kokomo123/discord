@@ -77,6 +77,8 @@ func DoUpgrade(helper *up.Helper) {
 	helper.Copy(up.Str, "bridge", "management_room_text", "welcome_unconnected")
 	helper.Copy(up.Str|up.Null, "bridge", "management_room_text", "additional_help")
 	helper.Copy(up.Bool, "bridge", "backfill", "enabled")
+	helper.Copy(up.Float, "bridge", "backfill", "sleep_min")
+	helper.Copy(up.Float, "bridge", "backfill", "sleep_max")
 	helper.Copy(up.Int, "bridge", "backfill", "forward_limits", "initial", "dm")
 	helper.Copy(up.Int, "bridge", "backfill", "forward_limits", "initial", "channel")
 	helper.Copy(up.Int, "bridge", "backfill", "forward_limits", "initial", "thread")

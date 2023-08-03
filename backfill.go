@@ -5,8 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"math/rand"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog"
@@ -125,6 +127,13 @@ func (portal *Portal) collectBackfillMessages(log zerolog.Logger, source *User, 
 		protoChannelID = thread.ID
 	}
 	for {
+		sleepMin := portal.bridge.Config.Bridge.Backfill.SleepMin
+		sleepMax := portal.bridge.Config.Bridge.Backfill.SleepMax
+		if sleepMin > 0 && sleepMax > 0 {
+			sleep := time.Duration(sleepMin+(sleepMax-sleepMin)*rand.Float64()) * time.Second
+			log.Debug().Dur("sleep", sleep).Msg("Sleeping before fetching more messages")
+			time.Sleep(sleep)
+		}
 		log.Debug().Str("before_id", before).Msg("Fetching messages for backfill")
 		newMessages, err := source.Session.ChannelMessages(protoChannelID, messageFetchChunkSize, before, "", "")
 		if err != nil {
@@ -188,6 +197,13 @@ func (portal *Portal) backfillUnlimitedMissed(log zerolog.Logger, source *User, 
 		protoChannelID = thread.ID
 	}
 	for {
+		sleepMin := portal.bridge.Config.Bridge.Backfill.SleepMin
+		sleepMax := portal.bridge.Config.Bridge.Backfill.SleepMax
+		if sleepMin > 0 && sleepMax > 0 {
+			sleep := time.Duration(sleepMin+(sleepMax-sleepMin)*rand.Float64()) * time.Second
+			log.Debug().Dur("sleep", sleep).Msg("Sleeping before fetching more messages")
+			time.Sleep(sleep)
+		}
 		log.Debug().Str("after_id", after).Msg("Fetching chunk of messages to backfill")
 		messages, err := source.Session.ChannelMessages(protoChannelID, messageFetchChunkSize, "", after, "")
 		if err != nil {

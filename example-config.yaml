@@ -225,6 +225,8 @@ bridge:
 
     # Settings for backfilling messages.
     backfill:
+        sleep_min: 0.5
+        sleep_max: 6.0
         # Limits for forward backfilling.
         forward_limits:
             # Initial backfill (when creating portal). 0 means backfill is disabled.

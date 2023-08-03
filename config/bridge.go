@@ -75,7 +75,9 @@ type BridgeConfig struct {
 	ManagementRoomText bridgeconfig.ManagementRoomTexts `yaml:"management_room_text"`
 
 	Backfill struct {
-		Limits struct {
+		SleepMin float64 `yaml:"sleep_min"`
+		SleepMax float64 `yaml:"sleep_max"`
+		Limits   struct {
 			Initial BackfillLimitPart `yaml:"initial"`
 			Missed  BackfillLimitPart `yaml:"missed"`
 		} `yaml:"forward_limits"`
